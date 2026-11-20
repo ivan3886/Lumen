@@ -13,6 +13,7 @@ from app.models.remito import Remito
 from app.models.movimiento_stock import MovimientoStock
 from app.models.movimiento_stock_detalle import MovimientoStockDetalle
 from app.models.auditoria import Auditoria
+from app.models.intento_login import IntentoLogin
 
 __all__ = [
     "Base",
@@ -31,4 +32,5 @@ __all__ = [
     "MovimientoStock",
     "MovimientoStockDetalle",
     "Auditoria",
+    "IntentoLogin",
 ]

@@ -178,3 +178,16 @@ CREATE TABLE auditoria (
     direccion_ip INET,
     FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
+
+-- 15. Intentos de login (para limitar fuerza bruta y dejar rastro de seguridad)
+-- No tiene clave foránea a propósito: también se registran usuarios que NO existen.
+CREATE TABLE intento_login (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL,
+    direccion_ip VARCHAR(45) NOT NULL,  -- 45 caracteres alcanzan para IPv6
+    exitoso BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+);
+
+CREATE INDEX idx_intento_login_usuario_fecha ON intento_login (usuario, fecha);
+CREATE INDEX idx_intento_login_ip_fecha ON intento_login (direccion_ip, fecha);

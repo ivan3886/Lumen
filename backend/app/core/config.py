@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # Límite de intentos de login: máximo N fallos dentro de la ventana de tiempo
+    LOGIN_MAX_INTENTOS_USUARIO: int = 5    # por nombre de usuario (frena fuerza bruta sobre una cuenta)
+    LOGIN_MAX_INTENTOS_IP: int = 20        # por IP (frena "password spraying": una clave probada en muchas cuentas)
+    LOGIN_VENTANA_MINUTOS: int = 15
+
     @field_validator("SECRET_KEY")
     @classmethod
     def secret_key_suficientemente_larga(cls, v: SecretStr) -> SecretStr:
