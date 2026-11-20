@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 
 class CategoriaBase(BaseModel):
     nombre: str = Field(..., max_length=50)
@@ -17,5 +17,4 @@ class CategoriaUpdate(BaseModel):
 class CategoriaResponse(CategoriaBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

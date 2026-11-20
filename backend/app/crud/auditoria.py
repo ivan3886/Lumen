@@ -1,8 +1,10 @@
-from typing import Optional, Any
+from typing import Optional
+
 from sqlalchemy.orm import Session
-from app.models.auditoria import Auditoria
+
 from app.enums import AccionAuditoriaEnum
-from netaddr import IPAddress # O manejo simple de string IP
+from app.models.auditoria import Auditoria
+
 
 class CRUDAuditoria:
     def registrar(
@@ -15,7 +17,7 @@ class CRUDAuditoria:
         accion: AccionAuditoriaEnum,
         datos_anteriores: Optional[dict] = None,
         datos_nuevos: Optional[dict] = None,
-        direccion_ip: Optional[str] = None
+        direccion_ip: Optional[str] = None,
     ) -> Auditoria:
         db_audit = Auditoria(
             usuario_id=usuario_id,
@@ -24,11 +26,12 @@ class CRUDAuditoria:
             accion=accion,
             datos_anteriores=datos_anteriores,
             datos_nuevos=datos_nuevos,
-            direccion_ip=direccion_ip
+            direccion_ip=direccion_ip,
         )
         db.add(db_audit)
         db.commit()
         db.refresh(db_audit)
         return db_audit
+
 
 auditoria = CRUDAuditoria()

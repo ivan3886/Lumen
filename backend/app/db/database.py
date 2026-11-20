@@ -1,24 +1,16 @@
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
 
-load_dotenv()
+from app.core.config import settings
 
-DATABASE_URL = (
-    f"postgresql+psycopg://"
-    f"{os.getenv('DB_USER')}:"
-    f"{os.getenv('DB_PASSWORD')}@"
-    f"{os.getenv('DB_HOST')}:"
-    f"{os.getenv('DB_PORT')}/"
-    f"{os.getenv('DB_NAME')}"
-)
+# pool_pre_ping: comprueba que la conexión siga viva antes de usarla
+engine = create_engine(settings.database_url, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine)
 
-engine = create_engine(DATABASE_URL)
 
 def get_db():
-    db = Session(engine)
+    db = SessionLocal()
     try:
         yield db
     finally:
-        db.close()
+        db.close()  # si quedó una transacción sin confirmar, se descarta (rollback)

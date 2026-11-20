@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 class CompraDetalleCreate(BaseModel):
     producto_id: int
@@ -12,14 +12,13 @@ class CompraDetalleResponse(CompraDetalleCreate):
     id: int
     subtotal: Decimal
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CompraCreate(BaseModel):
     proveedor_id: int
     numero_comprobante: Optional[str] = Field(None, max_length=50)
     observaciones: Optional[str] = None
-    detalles: List[CompraDetalleCreate]
+    detalles: List[CompraDetalleCreate] = Field(..., min_length=1)
 
 class CompraUpdate(BaseModel):
     proveedor_id: Optional[int] = None
@@ -36,5 +35,4 @@ class CompraResponse(BaseModel):
     observaciones: Optional[str]
     detalles: List[CompraDetalleResponse]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

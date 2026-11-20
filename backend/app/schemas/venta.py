@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Optional, List
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from app.enums import MedioPagoEnum, EstadoVentaEnum
 
 class VentaDetalleCreate(BaseModel):
     producto_id: int
     cantidad: int = Field(..., gt=0)
 
-class VentaDetalleResponse(VentaDetalleCreate):
+class VentaDetalleResponse(BaseModel):
     id: int
     producto_id: int
     cantidad: int
@@ -16,22 +16,20 @@ class VentaDetalleResponse(VentaDetalleCreate):
     costo_historico: Decimal
     subtotal: Decimal
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RemitoResponse(BaseModel):
     id: int
     numero_remito: str
     fecha_emision: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class VentaCreate(BaseModel):
-    cliente_id: int = 1  # Por defecto Consumidor Final (ID 1)
+    cliente_id: Optional[int] = None  # None = Consumidor Final
     medio_pago: MedioPagoEnum = MedioPagoEnum.EFECTIVO
     observaciones: Optional[str] = None
-    detalles: List[VentaDetalleCreate]
+    detalles: List[VentaDetalleCreate] = Field(..., min_length=1)
 
 class VentaUpdate(BaseModel):
     cliente_id: Optional[int] = None
@@ -51,5 +49,4 @@ class VentaResponse(BaseModel):
     detalles: List[VentaDetalleResponse]
     remito: Optional[RemitoResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

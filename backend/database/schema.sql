@@ -1,4 +1,5 @@
 -- Esquema principal de tablas para Lumen
+-- ORDEN DE EJECUCIÓN: primero types.sql, después este archivo y por último seed.sql.
 
 -- 1. Usuarios del sistema
 CREATE TABLE usuario (
@@ -6,10 +7,10 @@ CREATE TABLE usuario (
     nombre VARCHAR(50) NOT NULL,
     usuario VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    rol VARCHAR(50) DEFAULT 'empleado' NOT NULL
+    rol VARCHAR(50) NOT NULL DEFAULT 'empleado',
     activo BOOLEAN NOT NULL DEFAULT TRUE,
-    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_usuario_rol CHECK (rol IN ('admin', 'empleado'))
 );
 
 -- 2. Clientes (Consumidor Final se insertará en seed.sql)

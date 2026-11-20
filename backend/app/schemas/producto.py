@@ -1,6 +1,6 @@
 from typing import Optional
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 
 class ProductoBase(BaseModel):
     codigo_interno: str = Field(..., max_length=30)
@@ -37,5 +37,4 @@ class ProductoResponse(ProductoBase):
     id: int
     stock_actual: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 
 class ProveedorBase(BaseModel):
     nombre: str = Field(..., max_length=100)
@@ -25,5 +25,4 @@ class ProveedorUpdate(BaseModel):
 class ProveedorResponse(ProveedorBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

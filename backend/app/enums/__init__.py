@@ -24,3 +24,7 @@ class AccionAuditoriaEnum(str, Enum):
     INSERT = "INSERT"
     UPDATE = "UPDATE"
     DELETE = "DELETE"
+
+class RolEnum(str, Enum):
+    ADMIN = "admin"
+    EMPLEADO = "empleado"

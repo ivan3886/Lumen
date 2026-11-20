@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, Any
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from app.enums import AccionAuditoriaEnum
 
 class AuditoriaResponse(BaseModel):
@@ -14,5 +14,4 @@ class AuditoriaResponse(BaseModel):
     datos_nuevos: Optional[Any]
     direccion_ip: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
