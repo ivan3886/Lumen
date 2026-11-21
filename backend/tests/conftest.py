@@ -6,7 +6,6 @@ distinta a la real (por defecto 'lumen_test') y se aborta si el nombre no termin
 import itertools
 import os
 from decimal import Decimal
-from pathlib import Path
 
 # 1) La base de pruebas se fija ANTES de importar la app. Las variables de entorno
 #    tienen prioridad sobre el .env, así que esto pisa el DB_NAME real.
@@ -15,6 +14,7 @@ os.environ.setdefault("SECRET_KEY", "clave-solo-para-tests-" + "x" * 40)
 
 import bcrypt
 import pytest
+from alembic import command
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
@@ -25,7 +25,7 @@ from app.enums import RolEnum
 from app.main import app
 from app.models import Categoria, Producto, Proveedor
 from app.schemas.usuario import UsuarioCreate
-from tests.helpers import PASSWORD, bearer
+from tests.helpers import PASSWORD, RAIZ, bearer, config_alembic
 
 # 2) Freno de seguridad: jamás correr contra una base que no sea de pruebas.
 if not settings.DB_NAME.endswith("_test"):
@@ -35,7 +35,7 @@ if not settings.DB_NAME.endswith("_test"):
         returncode=2,
     )
 
-SQL_DIR = Path(__file__).resolve().parent.parent / "database"
+SQL_DIR = RAIZ / "database"
 
 TABLAS = (
     "auditoria, movimiento_stock_detalle, movimiento_stock, remito, venta_detalle, venta, "
@@ -72,21 +72,20 @@ def bcrypt_rapido():
 
 @pytest.fixture(scope="session", autouse=True)
 def esquema():
-    """Una vez por sesión: recrea el esquema REAL (types.sql + schema.sql).
+    """Una vez por sesión: vacía la base de pruebas y la construye con las MIGRACIONES de Alembic.
 
-    Usar los .sql verdaderos (y no create_all) hace que los tests también detecten
-    errores en el SQL, como la coma que faltaba.
+    Así los tests ejercitan el mismo camino que una instalación nueva: si una migración
+    está rota, los tests lo detectan.
     """
     _ejecutar_sql("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
-    _ejecutar_sql(_leer_sql("types.sql"))
-    _ejecutar_sql(_leer_sql("schema.sql"))
+    command.upgrade(config_alembic(), "head")
     yield
     engine.dispose()
 
 
 @pytest.fixture(autouse=True)
 def base_limpia(esquema):
-    """Antes de CADA test: tablas vacías y datos iniciales. Así ningún test depende de otro."""
+    """Antes de CADA test: tablas vacías y datos iniciales. Así ningún test depende de otro."""  # noqa
     _ejecutar_sql(f"TRUNCATE {TABLAS} RESTART IDENTITY CASCADE;")
     _ejecutar_sql(_leer_sql("seed.sql"))
 

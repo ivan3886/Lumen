@@ -1,4 +1,7 @@
 from decimal import Decimal
+from pathlib import Path
+
+from alembic.config import Config
 
 PASSWORD = "contraseña-de-prueba-123"
 
@@ -13,3 +16,12 @@ def dec(valor) -> Decimal:
 
 def bearer(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
+
+
+RAIZ = Path(__file__).resolve().parent.parent  # carpeta backend/
+
+
+def config_alembic() -> Config:
+    cfg = Config(str(RAIZ / "alembic.ini"))
+    cfg.set_main_option("script_location", str(RAIZ / "migrations"))
+    return cfg
